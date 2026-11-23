@@ -1,0 +1,132 @@
+@model SolicitudesListado
+@{
+    ViewData["Title"] = "Solicitudes de mantenimiento";
+}
+<div class="page-heading">
+    <h1>Solicitudes de mantenimiento</h1>
+</div>
+
+<div class="workspace">
+    <section class="panel create-panel" aria-labelledby="registrar">
+        <h2 id="registrar">Nueva solicitud</h2>
+        <form asp-action="Crear" method="post" class="fields" novalidate>
+            <div asp-validation-summary="ModelOnly" class="validation" role="alert"></div>
+            <div class="field">
+                <label asp-for="Nueva.EquipoId"></label>
+                <select asp-for="Nueva.EquipoId" aria-describedby="nueva-equipo-error" required>
+                    <option value="">Selecciona un equipo</option>
+                    @foreach (var equipo in Model.Equipos)
+                    {
+                        <option value="@equipo.Id">@equipo.Codigo · @equipo.Nombre</option>
+                    }
+                </select>
+                <span id="nueva-equipo-error" asp-validation-for="Nueva.EquipoId" class="validation"></span>
+            </div>
+            <div class="field">
+                <label asp-for="Nueva.Solicitante"></label>
+                <input asp-for="Nueva.Solicitante" aria-describedby="nueva-solicitante-error" required minlength="3" maxlength="100" />
+                <span id="nueva-solicitante-error" asp-validation-for="Nueva.Solicitante" class="validation"></span>
+            </div>
+            <div class="field">
+                <label asp-for="Nueva.Descripcion"></label>
+                <textarea asp-for="Nueva.Descripcion" aria-describedby="nueva-descripcion-error" rows="5" required minlength="10" maxlength="2000"></textarea>
+                <span id="nueva-descripcion-error" asp-validation-for="Nueva.Descripcion" class="validation"></span>
+            </div>
+            <div class="field">
+                <label asp-for="Nueva.Prioridad"></label>
+                <select asp-for="Nueva.Prioridad" aria-describedby="nueva-prioridad-error" required>
+                    <option value="">Selecciona la prioridad</option>
+                    @foreach (var prioridad in FlujoSolicitud.Prioridades)
+                    {
+                        <option value="@prioridad">@prioridad</option>
+                    }
+                </select>
+                <span id="nueva-prioridad-error" asp-validation-for="Nueva.Prioridad" class="validation"></span>
+            </div>
+            <button class="button primary" type="submit">Registrar solicitud</button>
+        </form>
+    </section>
+
+    <section class="panel list-panel" aria-labelledby="listado">
+        <div class="section-heading">
+            <h2 id="listado">Solicitudes activas</h2>
+            <span class="result-count">@Model.Solicitudes.Count @(Model.Solicitudes.Count == 1 ? "resultado" : "resultados")</span>
+        </div>
+        <form asp-action="Index" method="get" class="filters">
+            <div class="field">
+                <label for="q">Buscar</label>
+                <input id="q" name="q" value="@Model.Busqueda" placeholder="Código, solicitante o equipo" />
+            </div>
+            <div class="field">
+                <label for="prioridad">Prioridad</label>
+                <select id="prioridad" name="prioridad">
+                    <option value="">Todas</option>
+                    @foreach (var prioridad in FlujoSolicitud.Prioridades)
+                    {
+                        <option value="@prioridad" selected="@(prioridad == Model.Prioridad)">@prioridad</option>
+                    }
+                </select>
+            </div>
+            <div class="field">
+                <label for="estado">Estado</label>
+                <select id="estado" name="estado">
+                    <option value="">Todos</option>
+                    @foreach (var estado in FlujoSolicitud.Estados)
+                    {
+                        <option value="@estado" selected="@(estado == Model.Estado)">@estado.Replace('_', ' ')</option>
+                    }
+                </select>
+            </div>
+            <div class="filter-actions">
+                <button class="button secondary" type="submit">Filtrar</button>
+                <a class="text-link" asp-action="Index">Limpiar</a>
+            </div>
+        </form>
+        @if (Model.Solicitudes.Count == 0)
+        {
+            <p class="empty">No hay solicitudes activas para mostrar.</p>
+        }
+        else
+        {
+            <div class="table-container" role="region" aria-label="Listado de solicitudes" tabindex="0">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Código</th>
+                            <th scope="col">Equipo</th>
+                            <th scope="col">Solicitante</th>
+                            <th scope="col">Prioridad</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col">Fecha UTC</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var solicitud in Model.Solicitudes)
+                        {
+                            <tr>
+                                <th scope="row"><a asp-action="Detalle" asp-route-id="@solicitud.Id">@solicitud.CodigoSolicitud</a></th>
+                                <td>@solicitud.Equipo.Nombre</td>
+                                <td>@solicitud.Solicitante</td>
+                                <td><span class="priority @solicitud.Prioridad.ToLowerInvariant()">@solicitud.Prioridad</span></td>
+                                <td><span class="status @solicitud.Estado.ToLowerInvariant()">@solicitud.Estado.Replace('_', ' ')</span></td>
+                                <td class="date">@solicitud.FechaRegistro.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    <div class="row-actions">
+                                        <a asp-action="Detalle" asp-route-id="@solicitud.Id">Detalle</a>
+                                        <a asp-action="Editar" asp-route-id="@solicitud.Id">Editar</a>
+                                        @if (FlujoSolicitud.Destinos(solicitud.Estado).Count > 0)
+                                        {
+                                            <a asp-action="Detalle" asp-route-id="@solicitud.Id" asp-fragment="cambiar-estado">Cambiar estado</a>
+                                        }
+                                        <a asp-action="Eliminar" asp-route-id="@solicitud.Id" class="danger-link">Dar de baja</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+</div>

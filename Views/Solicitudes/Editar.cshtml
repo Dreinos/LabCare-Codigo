@@ -1,0 +1,38 @@
+@model SolicitudEdicion
+@{
+    ViewData["Title"] = "Editar solicitud";
+}
+<a class="back-link" asp-action="Detalle" asp-route-id="@Model.Id">← Detalle</a>
+<div class="page-heading">
+    <h1>Editar solicitud</h1>
+    <p>@Model.Codigo · @Model.Equipo</p>
+</div>
+<section class="panel narrow" aria-label="Editar datos">
+    <form asp-action="Editar" asp-route-id="@Model.Id" method="post" class="fields">
+        <div asp-validation-summary="ModelOnly" class="validation" role="alert"></div>
+        <div class="field">
+            <label asp-for="Solicitante"></label>
+            <input asp-for="Solicitante" required minlength="3" maxlength="100" />
+            <span asp-validation-for="Solicitante" class="validation"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Descripcion"></label>
+            <textarea asp-for="Descripcion" rows="6" required minlength="10" maxlength="2000"></textarea>
+            <span asp-validation-for="Descripcion" class="validation"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Prioridad"></label>
+            <select asp-for="Prioridad" required>
+                @foreach (var prioridad in FlujoSolicitud.Prioridades)
+                {
+                    <option value="@prioridad">@prioridad</option>
+                }
+            </select>
+            <span asp-validation-for="Prioridad" class="validation"></span>
+        </div>
+        <div class="form-actions">
+            <button class="button primary" type="submit">Guardar cambios</button>
+            <a class="text-link" asp-action="Detalle" asp-route-id="@Model.Id">Cancelar</a>
+        </div>
+    </form>
+</section>

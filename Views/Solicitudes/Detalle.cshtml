@@ -1,0 +1,57 @@
+@model Solicitud
+@{
+    ViewData["Title"] = Model.CodigoSolicitud;
+    var destinos = FlujoSolicitud.Destinos(Model.Estado);
+}
+<a class="back-link" asp-action="Index">← Solicitudes</a>
+<div class="page-heading detail-heading">
+    <div>
+        <h1>@Model.CodigoSolicitud</h1>
+        <p>@Model.Equipo.Codigo · @Model.Equipo.Nombre</p>
+    </div>
+    <span class="status @Model.Estado.ToLowerInvariant()">@Model.Estado.Replace('_', ' ')</span>
+</div>
+
+<div class="detail-grid">
+    <section class="panel" aria-labelledby="detalle">
+        <h2 id="detalle">Detalle de la solicitud</h2>
+        <dl class="metadata">
+            <div><dt>Solicitante</dt><dd>@Model.Solicitante</dd></div>
+            <div><dt>Ubicación del equipo</dt><dd>@Model.Equipo.Ubicacion</dd></div>
+            <div><dt>Prioridad</dt><dd><span class="priority @Model.Prioridad.ToLowerInvariant()">@Model.Prioridad</span></dd></div>
+            <div><dt>Identificador</dt><dd>@Model.Id</dd></div>
+            <div><dt>Registro (UTC)</dt><dd>@Model.FechaRegistro.ToString("dd/MM/yyyy HH:mm:ss")</dd></div>
+            <div><dt>Actualización (UTC)</dt><dd>@Model.FechaActualizacion.ToString("dd/MM/yyyy HH:mm:ss")</dd></div>
+        </dl>
+        <h3>Descripción</h3>
+        <p class="description">@Model.Descripcion</p>
+        <div class="form-actions">
+            <a class="button secondary" asp-action="Editar" asp-route-id="@Model.Id">Editar solicitud</a>
+            <a class="danger-link" asp-action="Eliminar" asp-route-id="@Model.Id">Dar de baja</a>
+        </div>
+    </section>
+    <section class="panel" aria-labelledby="cambiar-estado">
+        <h2 id="cambiar-estado">Cambiar estado</h2>
+        <div asp-validation-summary="ModelOnly" class="validation" role="alert"></div>
+        @if (destinos.Count == 0)
+        {
+            <p class="muted">La solicitud llegó a un estado final.</p>
+        }
+        else
+        {
+            <form asp-action="CambiarEstado" asp-route-id="@Model.Id" method="post" class="fields">
+                <div class="field">
+                    <label for="destino">Nuevo estado</label>
+                    <select id="destino" name="destino" required>
+                        <option value="">Selecciona un estado</option>
+                        @foreach (var destino in destinos)
+                        {
+                            <option value="@destino">@destino.Replace('_', ' ')</option>
+                        }
+                    </select>
+                </div>
+                <button class="button primary" type="submit">Actualizar estado</button>
+            </form>
+        }
+    </section>
+</div>

@@ -1,0 +1,11 @@
+bin/
+obj/
+.vs/
+*.user
+*.suo
+.env
+appsettings.Local.json
+TestResults/
+__pycache__/
+REGISTRO_IA.md
+registro_ia.md

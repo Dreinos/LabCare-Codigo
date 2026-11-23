@@ -1,0 +1,16 @@
+@model Solicitud
+@{
+    ViewData["Title"] = "Dar de baja";
+}
+<a class="back-link" asp-action="Detalle" asp-route-id="@Model.Id">← Detalle</a>
+<div class="page-heading">
+    <h1>Dar de baja la solicitud</h1>
+    <p>@Model.CodigoSolicitud · @Model.Equipo.Nombre</p>
+</div>
+<section class="panel narrow" aria-label="Confirmar baja">
+    <p>La solicitud de <strong>@Model.Solicitante</strong> dejará de aparecer en el listado activo. Su registro permanecerá en la base de datos.</p>
+    <form asp-action="Eliminar" asp-route-id="@Model.Id" method="post" class="form-actions">
+        <button class="button danger" type="submit">Confirmar baja</button>
+        <a class="text-link" asp-action="Detalle" asp-route-id="@Model.Id">Cancelar</a>
+    </form>
+</section>

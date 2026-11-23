@@ -1,0 +1,9 @@
+@model ErrorVista
+@{
+    ViewData["Title"] = $"Error {Model.Codigo}";
+}
+<div class="page-heading">
+    <h1>Error @Model.Codigo</h1>
+    <p>@Model.Mensaje</p>
+</div>
+<a class="button secondary" asp-controller="Solicitudes" asp-action="Index">Volver a solicitudes</a>

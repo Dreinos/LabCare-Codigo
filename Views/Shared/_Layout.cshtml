@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] · LabCare</title>
+    <link rel="stylesheet" href="~/css/labcare.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" asp-controller="Solicitudes" asp-action="Index">
+                <span class="brand-icon" aria-hidden="true">+</span>
+                LabCare
+            </a>
+            <nav aria-label="Principal">
+                <a asp-controller="Solicitudes" asp-action="Index">Solicitudes</a>
+            </nav>
+        </div>
+    </header>
+    <main class="container" id="contenido">
+        @if (TempData["Exito"] is string exito)
+        {
+            <p class="alert success" role="status">@exito</p>
+        }
+        @if (TempData["Aviso"] is string aviso)
+        {
+            <p class="alert warning" role="alert">@aviso</p>
+        }
+        @RenderBody()
+    </main>
+</body>
+</html>
